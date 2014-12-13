@@ -1,5 +1,9 @@
 package com.example.project;
 
+/*
+ * Class to parse JSON response coming from Google Place API.
+ */
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,13 +55,11 @@ public class PlacesResponseJSONParser {
 	// Parsing response for place detail. One JSON result.
 	private PlaceDetails getPlace(JSONObject jPlace){
 		 
-        //HashMap<String, String> place = new HashMap<String, String>();
-                
         String placename = "-NA-";
         String vicinity="-NA-";
         double latitude=0.0;
         double longitude=0.0;
-        //double rating=0;
+        
         double probability=0;
         
         PlaceDetails pDetails=new PlaceDetails();
@@ -75,17 +77,10 @@ public class PlacesResponseJSONParser {
  
             latitude = Double.parseDouble(jPlace.getJSONObject("geometry").getJSONObject("location").getString("lat"));
             longitude = Double.parseDouble(jPlace.getJSONObject("geometry").getJSONObject("location").getString("lng"));
-            //rating = Double.parseDouble(jPlace.getString("rating"));
- 
-            /*place.put("place_name", placeName);
-            place.put("vicinity", vicinity);
-            place.put("lat", latitude);
-            place.put("lng", longitude);*/
-            
-            //pDetails= new PlaceDetails(placename, vicinity, rating, latitude, longitude,0);    
+             
             pDetails.setName(placename);
             pDetails.setVicinity(vicinity);
-            //pDetails.setRating(rating);
+           
             pDetails.setLatitude(latitude);
             pDetails.setLongitude(longitude);
             pDetails.setProbability(probability);            

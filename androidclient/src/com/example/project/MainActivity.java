@@ -1,5 +1,9 @@
 package com.example.project;
 
+/*
+ * This activity launched in the starting of App. It is like a main() function for Android App.
+ */
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -28,7 +32,7 @@ public class MainActivity extends FragmentActivity{
         super.onCreate(savedInstanceState);       
         setContentView(R.layout.activity_main);
         gps = new GPSTracker(this);
-        LatLng latLng = new LatLng(/*31.229000,121.467800*/gps.getLatitude(), gps.getLongitude());
+        LatLng latLng = new LatLng(31.229,121.4678) /*gps.getLatitude(), gps.getLongitude()*/;
         if (googleMap == null) {
             googleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
          }
@@ -43,13 +47,15 @@ public class MainActivity extends FragmentActivity{
     {
     	Intent i = new Intent(this, DisplayActivity.class);
     	Bundle extras = new Bundle();
-    	
+    	    	
     	//gps = new GPSTracker(this);
 
     	if (gps.canGetLocation()) {
-    		latitude = String.valueOf(gps.getLatitude());
-    		longitude = String.valueOf(gps.getLongitude());
-            Log.d("Your Location", "latitude:" + gps.getLatitude() + ", longitude: " + gps.getLongitude());
+    		//latitude = String.valueOf(gps.getLatitude());
+    		//longitude = String.valueOf(gps.getLongitude());
+    		latitude=String.valueOf(31.229);
+    		longitude=String.valueOf(121.4678);
+            //Log.d("Your Location", "latitude:" + gps.getLatitude() + ", longitude: " + gps.getLongitude());
         } else {
             // Can't get user's current location
         	Log.d("Couldn't get location information","Please enable GPS");
@@ -57,10 +63,11 @@ public class MainActivity extends FragmentActivity{
             return;
         }
     	
+    	latitude=String.valueOf(31.229);
+		longitude=String.valueOf(121.4678);
     	
-    	//latitude = ((EditText)findViewById(R.id.latitude)).getText().toString();
-	    //longitude = ((EditText)findViewById(R.id.longitude)).getText().toString();
-	    String keyword = ((EditText) findViewById(R.id.keyword)).getText().toString();
+    	
+    	String keyword = ((EditText) findViewById(R.id.keyword)).getText().toString();
 	    
 	    extras.putString("LATI",latitude);
     	extras.putString("LONGI",longitude);

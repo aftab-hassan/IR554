@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -42,14 +43,17 @@ public class DisplayActivity extends FragmentActivity implements OnClickListener
 	
 	   static LatLng myMarker;
 	   private GoogleMap googleMap;
-	   List<PredictiveLocations> pLocations;
+	   InputStream iStream = null;
+	   List<PredictiveLocations> pLocations=new ArrayList<PredictiveLocations>();
 	   List<PlaceDetails> places = new ArrayList<PlaceDetails>();
-	   String jsonRequestObj;
+	   int flag =1;
+	   String responseStr;
 	   
 	   double currLatitude;
 	   double currLongitude;
 	   String keyword;
 	   EditText editText;
+	   String data;
 	   
 	   
 	   @Override
@@ -59,19 +63,22 @@ public class DisplayActivity extends FragmentActivity implements OnClickListener
 	      
 	      Intent i = getIntent();
 	      Bundle extras = i.getExtras();
+	      
+	      //asyncLoad.execute();
 	           
 	      currLatitude = Double.parseDouble(extras.getString("LATI"));
 	      currLongitude = Double.parseDouble(extras.getString("LONGI"));
 	      keyword=extras.getString("KEYWORD").replace(" ", "+");
 	      
+	      
+	      Log.d("sdj","sdjka");
+	      
 	      editText = (EditText)findViewById(R.id.keyword);
 	      editText.setText(keyword.replace("+", " "),EditText.BufferType.EDITABLE);
 	      editText.setOnClickListener(this);
-
-	      
+	      	      
 	      //myMarker = new LatLng(currLatitude,currLongitude);
-	      
-	      
+	      	      
 	      int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getBaseContext());
 	      if(status!=ConnectionResult.SUCCESS){ // Google Play Services are not available
 	    	  int requestCode = 10;
@@ -80,40 +87,13 @@ public class DisplayActivity extends FragmentActivity implements OnClickListener
 	      }else {
 	      
 		      try { 
-		            /*if (googleMap == null) {
-		               googleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-		            }
-		         //googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-		         googleMap.addMarker(new MarkerOptions().position(myMarker).title(keyword));*/
-		         
-		         
-		         // Panda Algorithm call
-		         DummyPredictiveModel pm = new DummyPredictiveModel();
-		         pLocations = pm.pandaAlgorithm(currLatitude, currLongitude);
-		         
-		         pandaAsyncLoad pLoad=new pandaAsyncLoad();
-		         pLoad.execute();
-		         
-		         
-		         // calling reranking
-		         Reranking r=new Reranking();
-		         pLocations=r.sendCount(pLocations);
-		         
-		         String [] urlrequests = new String[3];
-		         
-		         for (int j = 0; j < urlrequests.length; j++) {
-		        	    PredictiveLocations pLoc=pLocations.get(j);
-		        	    urlrequests[j] = makeRequestUrl(pLoc.latitude,pLoc.longitude,keyword);
-		        	}
-		         
-		         
+		            
 		         // Creating a new non-UI thread task to download JSON data
 		         PlacesTask placesTask = new PlacesTask();
 		         
 		         // Invokes the "doInBackground()" method of the class PlaceTask
-		         //placesTask.execute(urlRequest);
-		         
-		         placesTask.execute(urlrequests[0].toString(), urlrequests[1].toString(),urlrequests[2].toString());
+		         placesTask.execute();
+		        	         
 		         
 		      } catch (Exception e) {
 		         e.printStackTrace();
@@ -164,53 +144,51 @@ public class DisplayActivity extends FragmentActivity implements OnClickListener
 		   return data;
 	   }
 	   
-	   
-	   public class pandaAsyncLoad extends AsyncTask<Void, Void, String>
-		{
-			String data = "";
-			InputStream iStream = null;
-		        @Override
-		        protected String doInBackground(Void... params)
-		        {
-		        	try{
-		        	
-		            URL url=new URL("http://108.179.158.253:8080/secondproject/seconservlet");
-		            Log.d("URL content", url.toString());
-		            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-		            Log.d("URL content", "register URL");
-		            urlConnection.connect();
-		            Log.d("URL connection", "establish connection");
-		            iStream = urlConnection.getInputStream();
-					   BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-					   StringBuffer sb = new StringBuffer();
-					   String line = "";
-					   while( ( line = br.readLine())!= null){
-					   sb.append(line);
-					   }
-					   jsonRequestObj = sb.toString();
-					   br.close();
-		        	}
-		        	catch(Exception e)
-		        	{
-		        		Log.d("Connection Error",e.toString());
-		        	}
-		            return data;
-		            
-		        }
-		 }
-	   
+	   	   
+	   	   
 	   /** A class, to download Google Places */
 	   private class PlacesTask extends AsyncTask<String, Integer, List<String>>{
 		   //String data = null; 
 		   List <String> data = new ArrayList<String>();
+		   String pandaURL="http://140.142.218.200:8080/projectone/seconservlet";
+		   String pandaResp;
 		   
 		   // Invoked by execute() method of this object
 		   @Override
 		   protected List<String> doInBackground(String... url) {
 			   try{
-				   for(int i=0 ; i<url.length;i++)
+				   pandaResp=downloadUrl(pandaURL); 
+				   				   
+				   Log.d("Response", pandaResp);
+				   JSONArray retrievejsonArray = new JSONArray(pandaResp);
+				   
+				   PredictiveLocations pl;
+				   for (int a = 0; a < 3; ++a) 
 				   {
-					   data.add(downloadUrl(url[i]));
+					    JSONObject rec = retrievejsonArray.getJSONObject(a);
+					    double retrievedlat = rec.getDouble("lat");
+					    double retrievedlong = rec.getDouble("long");
+					    double retrievedprob = rec.getDouble("prob");
+					    pl=new PredictiveLocations(retrievedlat,retrievedlong,retrievedprob);
+					    Log.d("P1",Double.toString(pl.latitude)+Double.toString(pl.longitude));
+					    pLocations.add(pl);
+					    Log.d("Response", "from retrieving : at a=="+a+"lat=="+retrievedlat+",long=="+retrievedlong+",prob=="+retrievedprob);
+				   }
+				   
+				   Reranking r=new Reranking();
+			       pLocations=r.sendCount(pLocations);
+			         
+			         String [] urlrequests = new String[3];
+			         
+			         for (int j = 0; j < urlrequests.length; j++) {
+			        	    PredictiveLocations pLoc=pLocations.get(j);
+			        	    urlrequests[j] = makeRequestUrl(pLoc.latitude,pLoc.longitude,keyword);
+			        	}
+				   		   
+			   
+				   for(int i=0 ; i<urlrequests.length;i++)
+				   {
+					   data.add(downloadUrl(urlrequests[i]));
 				   }
 			   }catch(Exception e){
 				   Log.d("Background Task",e.toString());
@@ -221,19 +199,12 @@ public class DisplayActivity extends FragmentActivity implements OnClickListener
 		   // Executed after the complete execution of doInBackground() method
 		   @Override
 		   protected void onPostExecute(List<String> result){
-			   //int u =0;
-			   /*if(data != null)
-			   {
-				   Log.d("DATA not NULL",keyword);  
-			   }
-			   else
-				   Log.d("DATA NULL",keyword); */
-			   
+			   Log.d("Inside Background Task","::2:::;");
+			   			   
 			   ParserTask parserTask = new ParserTask();
 			   
 			   // Start parsing the Google places in JSON format
 			   // Invokes the "doInBackground()" method of the class ParseTask
-			   //String s = result.get((0));
 			   places=parserTask.parseExecute(result);
 			   parserTask.showOnMap(places);
 		   }
@@ -242,18 +213,17 @@ public class DisplayActivity extends FragmentActivity implements OnClickListener
 	   
 	   private class ParserTask {
 		   List<JSONObject> jObjects = new ArrayList<JSONObject>();
-		   	//JSONObject jObject[];
-		   	
 		   	
 		   	// Invoked by execute() method of this object
 		   	protected List<PlaceDetails> parseExecute(List<String> jsonData) {
+		   		Log.d("Inside Background Task",":::3::");
 		   		
 		   		List<PlaceDetails> lPlaces;
 		   		List <PlaceDetails> finalplacesList = new ArrayList<PlaceDetails>();
 		   		
 		   		PlacesResponseJSONParser placeJsonParser = new PlacesResponseJSONParser();
 		   		String g= "PARSE";
-		   		//Log.d("Inside parser",g);
+		   		
 		   		try{
 		   				for(int i=0;i<jsonData.size();i++)
 		   				{
@@ -316,6 +286,7 @@ public class DisplayActivity extends FragmentActivity implements OnClickListener
 			   		
 			   		// Getting name
 			   		String name = place.getName();
+			   		Log.d("NAME::",name);
 			   		
 			   		// Getting vicinity
 			   		String vicinity = place.getVicinity();
@@ -328,8 +299,7 @@ public class DisplayActivity extends FragmentActivity implements OnClickListener
 			   		
 			   		// Setting the title for the marker.
 			   		//This will be displayed on taping the marker
-			   		//markerOptions.title(name + " : " + vicinity);
-			   		
+		   		
 			   		if (googleMap == null) {
 			               googleMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
 			            }
@@ -356,7 +326,7 @@ public class DisplayActivity extends FragmentActivity implements OnClickListener
 		    extras.putString("LATI",String.valueOf(currLatitude));
 	    	extras.putString("LONGI",String.valueOf(currLongitude));
 	    	extras.putString("KEYWORD",keyword);
-	    	//Log.d("LAT {0}, LON {1}, Key {2}",latitude);
+	    	
 	    	i.putExtras(extras);
 	    	startActivity(i);
 	    }

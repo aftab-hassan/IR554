@@ -1,11 +1,14 @@
 package com.example.project;
 
+/*  
+ * Class to store location related information from Google Place API.
+ */
+
 public class PlaceDetails {
 	
 	String pName;
 	String pVicinity;
-	//double pRating;
-	
+		
 	double pLatitude;
 	double pLongitude;
 	double pProbability;
@@ -22,9 +25,7 @@ public class PlaceDetails {
 		this.pLongitude = longi;
 		this.pName = name;
 		this.pVicinity = vicinity;
-		this.pProbability = probability;
-		//this.pRating = rating;
-		
+		this.pProbability = probability;		
 	}
 	
 	void setName(String name)

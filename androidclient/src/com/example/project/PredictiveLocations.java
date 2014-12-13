@@ -1,5 +1,9 @@
 package com.example.project;
 
+/*
+ * Define Object and methods to store PANDA results in Android. 
+ */
+
 public class PredictiveLocations {
 	
 	double latitude;

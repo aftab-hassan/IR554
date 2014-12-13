@@ -2,6 +2,10 @@ package com.example.project;
 
 import java.util.List;
 
+/*
+ * Calculate counts per location on the basis of Probability coming from PANDA algorithm
+ */
+
 public class Reranking {
 	
 	
@@ -20,7 +24,6 @@ public class Reranking {
 	    limitloc0 = (int)(probabilityofroute0*10/sumofprobabilities);
 	    limitloc1 = (int)(probabilityofroute1*10/sumofprobabilities);
 	    limitloc2 = (int)(probabilityofroute2*10/sumofprobabilities);
-	    /* Now make limitloc1, limitloc2 and limitloc3 to be global variables and access these in spot two */
 	    
 	    p.get(0).setCount(limitloc0);
 	    p.get(1).setCount(limitloc1);

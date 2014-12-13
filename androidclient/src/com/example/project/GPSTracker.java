@@ -1,4 +1,8 @@
 package com.example.project;
+
+/*
+ * Functions to read the GPS location from Mobile.
+ */
  
 import android.app.AlertDialog;
 import android.app.Service;
