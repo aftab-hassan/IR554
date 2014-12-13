@@ -1,0 +1,16 @@
+Read me:
+
+*Install Java.
+*Install Android SDK.
+*Import Project(with all resources) into the workspace.
+*Install Google Play service from Android SDK.
+*Include Google Play libaray in your project build path.(Properties for Project)
+  Right click on project -> Build Path--> Configure build path --> Java Build path --> Libraries --> Add External JARs 
+	--> Browse to <Android Software folder>\sdk\extras\google\google_play_services\libproject\google-play-services_lib\
+*Set the address of server name where PANDA algorithm is running.
+	In DisplayActivity, in class PlacesTask, in pandaURL variable.
+*The Google Auth Key is hard-coded in code. IF any other Key is used, we need to change it in makeRequestUrl module.
+
+
+
+ 
