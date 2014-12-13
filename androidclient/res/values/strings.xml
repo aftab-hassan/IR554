@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">NearBy</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="latitude">latitude</string>
+    <string name="longitude">longitude</string>
+    <string name="keyword">keyword</string>
+    <string name="button_send">Search</string>
+    <string name="title_activity_display">DisplayActivity</string>
+
+</resources>
