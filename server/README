@@ -1,0 +1,9 @@
+Instructions
+------------
+This is the server which runs the PANDA algorithm predictive model, converts it to JSON and sends the output as a JSON string to be used by the client.
+
+Steps to build and run
+----------------------
+Create a New 'Dynamic Web Project' on eclipse.
+You need to have the jar file java-json.jar. Add it to the External Libraries in eclipse.
+Build and run using eclipse.
